@@ -1,10 +1,10 @@
 import logging
 from fastapi import FastAPI
-from .Persistence.database import init_db
-from .Routes.UsedProduct_route import router as usedproduct_router
-from .Routes.User_route import router as user_router
-from .Routes.Category_route import router as category_router
-from .Routes.Transaction_route import router as transaction_router
+from Persistence.database import init_db
+from Routes.UsedProduct_route import router as usedproduct_router
+from Routes.User_route import router as user_router
+from Routes.Category_route import router as category_router
+from Routes.Transaction_route import router as transaction_router
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
