@@ -1,0 +1,34 @@
+from fastapi import APIRouter, Depends
+from sqlmodel import Session
+from Domain.Entities.Category import Category
+from Services.Category_serv import CategoryService
+from Persistence.Category_repo import CategoryRepository
+from Persistence.database import get_session
+
+router = APIRouter(prefix="/categories", tags=["Categories"])
+
+@router.post("/", response_model=Category)
+def create_category(category: Category, session: Session = Depends(get_session)):
+    service = CategoryService(CategoryRepository())
+    return service.create_category(session, category)
+
+@router.get("/{category_id}", response_model=Category | None)
+def get_category(category_id: int, session: Session = Depends(get_session)):
+    service = CategoryService(CategoryRepository())
+    return service.get_category(session, category_id)
+
+@router.get("/", response_model=list[Category])
+def list_categories(session: Session = Depends(get_session)):
+    service = CategoryService(CategoryRepository())
+    return service.list_categories(session)
+
+@router.put("/{category_id}", response_model=Category | None)
+def update_category(category_id: int, category: Category, session: Session = Depends(get_session)):
+    service = CategoryService(CategoryRepository())
+    return service.update_category(session, category_id, category)
+
+@router.delete("/{category_id}")
+def delete_category(category_id: int, session: Session = Depends(get_session)):
+    service = CategoryService(CategoryRepository())
+    success = service.delete_category(session, category_id)
+    return {"deleted": success}

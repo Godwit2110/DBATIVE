@@ -1,0 +1,34 @@
+from fastapi import APIRouter, Depends
+from sqlmodel import Session
+from Domain.Entities.User import User
+from Services.User_serv import UserService
+from Persistence.User_repo import UserRepository
+from Persistence.database import get_session
+
+router = APIRouter(prefix="/users", tags=["Users"])
+
+@router.post("/", response_model=User)
+def create_user(user: User, session: Session = Depends(get_session)):
+    service = UserService(UserRepository())
+    return service.create_user(session, user)
+
+@router.get("/{user_id}", response_model=User | None)
+def get_user(user_id: int, session: Session = Depends(get_session)):
+    service = UserService(UserRepository())
+    return service.get_user(session, user_id)
+
+@router.get("/", response_model=list[User])
+def list_users(session: Session = Depends(get_session)):
+    service = UserService(UserRepository())
+    return service.list_users(session)
+
+@router.put("/{user_id}", response_model=User | None)
+def update_user(user_id: int, user: User, session: Session = Depends(get_session)):
+    service = UserService(UserRepository())
+    return service.update_user(session, user_id, user)
+
+@router.delete("/{user_id}")
+def delete_user(user_id: int, session: Session = Depends(get_session)):
+    service = UserService(UserRepository())
+    success = service.delete_user(session, user_id)
+    return {"deleted": success}
