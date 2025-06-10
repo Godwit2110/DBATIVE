@@ -10,7 +10,11 @@ class Category(SQLModel, table=True):
 
     subcategories: List["Category"] = Relationship(
         back_populates="parent",
-        sa_relationship_kwargs={"cascade": "all, delete-orphan"}
+        sa_relationship_kwargs={
+            "remote_side": "Category.id",
+            "single_parent": True,       # <--- ensure each child has only one parent
+            "cascade": "all, delete-orphan"
+        }
     )
 
     parent: Optional["Category"] = Relationship(back_populates="subcategories")
