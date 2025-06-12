@@ -23,9 +23,6 @@ class UserService:
         return self.to_view(user_db)
 
     def create_user(self, session: Session, user: User) -> User:
-        # Example: automatically set a default hashed password if missing
-        if not user.hashed_password:
-            user.hashed_password = "default_hash"
         return self.repo.create_user(session, user)
 
     def list_users(self, session: Session) -> list[User]:
