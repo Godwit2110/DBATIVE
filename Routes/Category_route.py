@@ -7,7 +7,7 @@ from Persistence.database import get_session
 
 router = APIRouter(prefix="/categories", tags=["Categories"])
 
-@router.post("/", response_model=Category)
+@router.post("/", response_model=Category, status_code=201)
 def create_category(category: Category, session: Session = Depends(get_session)):
     service = CategoryService(CategoryRepository())
     return service.create_category(session, category)
@@ -27,7 +27,7 @@ def update_category(category_id: int, category: Category, session: Session = Dep
     service = CategoryService(CategoryRepository())
     return service.update_category(session, category_id, category)
 
-@router.delete("/{category_id}")
+@router.delete("/{category_id}", status_code=204)
 def delete_category(category_id: int, session: Session = Depends(get_session)):
     service = CategoryService(CategoryRepository())
     success = service.delete_category(session, category_id)

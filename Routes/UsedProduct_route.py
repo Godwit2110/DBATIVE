@@ -7,7 +7,7 @@ from Persistence.database import get_session
 
 router = APIRouter(prefix="/usedproducts", tags=["Used Products"])
 
-@router.post("/", response_model=UsedProduct)
+@router.post("/", response_model=UsedProduct, status_code=201)
 def create_product(product: UsedProduct, session: Session = Depends(get_session)):
     service = UsedProductService(UsedProductRepository())
     return service.create_product(session, product)
@@ -28,7 +28,7 @@ def update_product(product_id: int, product: UsedProduct, session: Session = Dep
     service = UsedProductService(UsedProductRepository())
     return service.update_product(session, product_id, product)
 
-@router.delete("/{product_id}")
+@router.delete("/{product_id}", status_code=204)
 def delete_product(product_id: int, session: Session = Depends(get_session)):
     service = UsedProductService(UsedProductRepository())
     success = service.delete_product(session, product_id)
