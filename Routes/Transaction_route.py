@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
+from Domain.Models.Transaction_view import TransactionView
 from sqlmodel import Session
 from Domain.Entities.Transaction import Transaction
 from Services.Transaction_serv import TransactionService
@@ -12,10 +13,13 @@ def create_transaction(transaction: Transaction, session: Session = Depends(get_
     service = TransactionService(TransactionRepository())
     return service.create_transaction(session, transaction)
 
-@router.get("/{transaction_id}", response_model=Transaction | None)
+@router.get("/{transaction_id}", response_model=TransactionView)
 def get_transaction(transaction_id: int, session: Session = Depends(get_session)):
     service = TransactionService(TransactionRepository())
-    return service.get_transaction(session, transaction_id)
+    transaction_view = service.get_transaction_view(session, transaction_id)
+    if not transaction_view:
+        raise HTTPException(status_code=404, detail="Transaction not found")
+    return transaction_view
 
 @router.get("/", response_model=list[Transaction])
 def list_transactions(session: Session = Depends(get_session)):

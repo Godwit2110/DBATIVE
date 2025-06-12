@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
+from Domain.Models.UsedProduct_view import UsedProductView
 from sqlmodel import Session
 from Domain.Entities.UsedProduct import UsedProduct
 from Services.UsedProduct_serv import UsedProductService
@@ -12,10 +13,13 @@ def create_product(product: UsedProduct, session: Session = Depends(get_session)
     service = UsedProductService(UsedProductRepository())
     return service.create_product(session, product)
 
-@router.get("/{product_id}", response_model=UsedProduct | None)
+@router.get("/{product_id}", response_model=UsedProductView)
 def get_product(product_id: int, session: Session = Depends(get_session)):
     service = UsedProductService(UsedProductRepository())
-    return service.get_product(session, product_id)
+    product_view = service.get_product_view(session, product_id)
+    if not product_view:
+        raise HTTPException(status_code=404, detail="Used product not found")
+    return product_view
 
 @router.get("/")
 def list_products(limit: int = 10, offset: int = 0, session: Session = Depends(get_session)):
