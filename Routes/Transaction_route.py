@@ -21,10 +21,11 @@ def get_transaction(transaction_id: int, session: Session = Depends(get_session)
         raise HTTPException(status_code=404, detail="Transaction not found")
     return transaction_view
 
-@router.get("/", response_model=list[Transaction])
-def list_transactions(session: Session = Depends(get_session)):
+@router.get("/", response_model=list[TransactionView])
+def list_transactions(limit: int = 10, offset: int = 0, session: Session = Depends(get_session)):
     service = TransactionService(TransactionRepository())
-    return service.list_transactions(session)
+    all_txs = service.list_transactions(session)
+    return [service.to_view(tx) for tx in all_txs][offset : offset + limit]
 
 @router.put("/{transaction_id}", response_model=Transaction | None)
 def update_transaction(transaction_id: int, transaction: Transaction, session: Session = Depends(get_session)):

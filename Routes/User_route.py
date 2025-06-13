@@ -21,10 +21,11 @@ def get_user(user_id: int, session: Session = Depends(get_session)):
         raise HTTPException(status_code=404, detail="User not found")
     return user_view
 
-@router.get("/", response_model=list[User])
-def list_users(session: Session = Depends(get_session)):
+@router.get("/", response_model=list[UserView])
+def list_users(limit: int = 10, offset: int = 0, session: Session = Depends(get_session)):
     service = UserService(UserRepository())
-    return service.list_users(session)
+    users_db = service.list_users(session)
+    return [service.to_view(u) for u in users_db][offset : offset + limit]
 
 @router.put("/{user_id}", response_model=User)
 def update_user(user_id: int, user: User, session: Session = Depends(get_session)):

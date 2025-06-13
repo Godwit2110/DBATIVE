@@ -21,11 +21,11 @@ def get_product(product_id: int, session: Session = Depends(get_session)):
         raise HTTPException(status_code=404, detail="Used product not found")
     return product_view
 
-@router.get("/")
+@router.get("/", response_model=list[UsedProductView])
 def list_products(limit: int = 10, offset: int = 0, session: Session = Depends(get_session)):
     service = UsedProductService(UsedProductRepository())
     products = service.list_products(session)
-    return products[offset : offset + limit]
+    return [service.to_view(p) for p in products][offset : offset + limit]
 
 @router.put("/{product_id}", response_model=UsedProduct | None)
 def update_product(product_id: int, product: UsedProduct, session: Session = Depends(get_session)):
